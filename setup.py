@@ -14,27 +14,27 @@ eager_resources = list()
 zip_safe = True
 
 class SDKException(Exception):
-	def __init__(self,message=None):
-		self.message = message
+    def __init__(self,message=None):
+        self.message = message
 
-		if sys.version < '3.3':
-			vs_version = 9
-		elif '3.3' <= sys.version < '3.5':
-			vs_version = 10
-		elif sys.version >= '3.5':
-			vs_version = 14
-		else:
-			vs_version = None
+        if sys.version < '3.3':
+            vs_version = 9
+        elif '3.3' <= sys.version < '3.5':
+            vs_version = 10
+        elif sys.version >= '3.5':
+            vs_version = 14
+        else:
+            vs_version = None
 
-		if vs_version != None:
-			self.info = "For python {0}.{1} ".format(
-                                sys.version_info.major, 
+        if vs_version != None:
+            self.info = "For python {0}.{1} ".format(
+                                sys.version_info.major,
                                 sys.version_info.minor)
-			self.info = self.info + "consider installing Visual Studio {0}".format(
+            self.info = self.info + "consider installing Visual Studio {0}".format(
                                 vs_version)
-	def __str__(self):
-		return self.message+"\n"+self.info
-		
+    def __str__(self):
+        return self.message+"\n"+self.info
+
 
 def find_MS_SDK():
     candidate_roots = (os.getenv('ProgramFiles'), os.getenv('ProgramW6432'),
@@ -68,14 +68,14 @@ def find_MS_SDK():
             if os.path.exists(candidate_sdk):
                 return candidate_sdk
     raise SDKException("Could not find the Windows Platform SDK.")
-	
+
 if sys.platform == 'win32':
     try:
         PSDK_PATH = find_MS_SDK()
     except SDKException as e:
         raise SystemExit(e)
-    
-        
+
+
     lib_path = os.path.join(PSDK_PATH, 'Lib')
     if '64' in platform.architecture()[0]:
         lib_path = os.path.join(lib_path, 'x64')
@@ -116,7 +116,7 @@ elif sys.platform.startswith("darwin"):
     package_dir['lightblue'] = 'macos'
     install_requires += ['pyobjc-core>=3.1', 'pyobjc-framework-Cocoa>=3.1']
     zip_safe = False
-    
+
     # FIXME: This is inelegant, how can we cover the cases?
     if 'install' in sys.argv or 'bdist' in sys.argv or 'bdist_egg' in sys.argv:
         # Build the framework into macos/
@@ -129,7 +129,7 @@ elif sys.platform.startswith("darwin"):
             'INSTALL_PATH=/',
             'DEPLOYMENT_LOCATION=YES',
         ])
-        
+
         # We can't seem to list a directory as package_data, so we will
         # recursively add all all files we find
         package_data['lightblue'] = []
@@ -137,10 +137,10 @@ elif sys.platform.startswith("darwin"):
             for f in files:
                 include = os.path.join(path, f)[6:]  # trim off macos/
                 package_data['lightblue'].append(include)
-    
+
         # This should allow us to use the framework from an egg [untested]
         eager_resources.append('macos/LightAquaBlue.framework')
-        
+
 else:
     raise Exception("This platform (%s) is currently not supported by pybluez."
                     % sys.platform)
